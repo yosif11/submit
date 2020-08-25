@@ -190,5 +190,39 @@ ${message.author.id}`);
  
     })}});
 
+    client.on('message',async message => {
+  let mention = message.mentions.members.first();
+  let role = message.content.split(" ").slice(2).join(" ");
+  let mySupport = message.guild.roles.find('name',role);
+  if(message.content.startsWith(prefix + "قبول")) {
+    let acRoom = message.guild.channels.find('name', 'اسم الروم قبول ورفض');
+    if(!acRoom) return message.reply("انت لم تعمل روم القبول والرفظ");
+    if(acRoom) {
+    if(!message.guild.member(message.author).hasPermission("MANAGE_ROLES")) return;
+    if(!mention) return message.reply('منشن شخص');
+    if(!role) return message.reply('ادخل اسم رتبة');
+    if(!mySupport) return message.reply('هذه الرتبة غير موجودة');
+    if(mention.roles.has(mySupport)) return message.reply('هذا الشخص معه الرتبة مسبقا');
+ 
+    mention.addRole(mySupport).then(() => {
+      acRoom.send(`**[ ${mySupport} ] واعطائك رتبة ${mention} تم بنجاح قبولك**`);
+    });
+  }
+}
+});
+
+client.on('message',async message => {
+  let mention = message.mentions.members.first();
+  if(message.content.startsWith(prefix + "رفض")) {
+  if(!message.channel.guild) return;
+  let acRoom = message.guild.channels.find('name', 'اسم الروم');
+  if(!acRoom) return message.reply("انت لم تعمل روم القبول والرفظ");
+  if(!message.guild.member(message.author).hasPermission("MANAGE_ROLES")) return;
+  if(!mention) return message.reply("منشن شخص");
+ 
+  acRoom.send(`**${mention} تم رفضك للاسف**`)
+  }
+});
+
 
 client.login(process.env.token);
